@@ -10,7 +10,10 @@ services:
         image: "redis:alpine"
         expose:
             - "6379"
-  # worker:
+    worker:
+        build:
+            context: worker
+            dockerfile: Dockerfile
   # db:
     result:
         build:
