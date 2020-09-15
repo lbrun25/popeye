@@ -1,0 +1,17 @@
+version: '3'
+services:
+    poll:
+        build:
+            context: poll
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+    redis:
+        image: "redis:alpine"
+        expose:
+            - "6379"
+  # worker:
+  # db:
+  # result:
+volumes:
+    dbdata:
