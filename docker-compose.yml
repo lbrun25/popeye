@@ -12,6 +12,11 @@ services:
             - "6379"
   # worker:
   # db:
-  # result:
+    result:
+        build:
+            context: result
+            dockerfile: Dockerfile
+        ports:
+            - "5001:5001"
 volumes:
     dbdata:
