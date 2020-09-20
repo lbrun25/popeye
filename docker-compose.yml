@@ -1,25 +1,43 @@
 version: '3'
 services:
     poll:
+        container_name: poll
         build:
             context: poll
             dockerfile: Dockerfile
         ports:
             - "5000:5000"
+        links:
+            - redis
     redis:
-        image: "redis:alpine"
-        expose:
-            - "6379"
+        image: "redis:latest"
+        ports:
+            - "127.0.0.1:6379:6379"
+
     worker:
+        container_name: worker
         build:
             context: worker
             dockerfile: Dockerfile
-  # db:
+        links:
+            - redis
+            - db
+    db:
+        image: "postgres"
+        restart: always
+        env_file:
+            - db.env
+        volumes:
+            - ./dbdata:/var/lib/postgresql/data # persist data
+
     result:
+        container_name: result
         build:
             context: result
             dockerfile: Dockerfile
         ports:
             - "5001:5001"
+        links:
+            - db
 volumes:
     dbdata:
