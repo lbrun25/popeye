@@ -1,27 +1,50 @@
 version: '3'
+
+networks:
+    poll-tier: 
+        driver: bridge
+    result-tier: 
+        driver: bridge
+    back-tier: 
+        driver: bridge
+
 services:
     poll:
         container_name: poll
+        restart: always
         build:
             context: poll
             dockerfile: Dockerfile
+        environment:
+            FLASK_ENV: development
         ports:
-            - "5000:5000"
+            - "5000:80"
+        networks:
+            - poll-tier
         links:
             - redis
+
     redis:
         image: "redis:latest"
+        restart: always
         ports:
-            - "127.0.0.1:6379:6379"
+            - "6379"
+        networks:
+            - poll-tier
+            - back-tier
 
     worker:
         container_name: worker
+        restart: always
         build:
             context: worker
             dockerfile: Dockerfile
+        networks:
+            - back-tier
         links:
             - redis
             - db
+
     db:
         image: "postgres"
         restart: always
@@ -29,15 +52,25 @@ services:
             - db.env
         volumes:
             - ./dbdata:/var/lib/postgresql/data # persist data
+        networks:
+            - result-tier
+            - back-tier
 
     result:
         container_name: result
+        restart: always
         build:
             context: result
             dockerfile: Dockerfile
+        environment:
+            NODE_ENV: development
+            FLASK_ENV: development
         ports:
-            - "5001:5001"
+            - "5001:80"
+        networks:
+            - result-tier
         links:
             - db
+
 volumes:
     dbdata:

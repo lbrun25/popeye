@@ -8,8 +8,8 @@ import org.json.JSONObject;
 class Worker {
   public static void main(String[] args) {
     try {
-        Jedis redis = connectToRedis("127.0.0.1");
-        Connection dbConn = connectToDB("127.0.0.1");
+        Jedis redis = connectToRedis("redis");
+        Connection dbConn = connectToDB("db");
 
         System.err.println("Watching vote queue");
 
@@ -78,6 +78,10 @@ class Worker {
           sleep(1000);
         }
       }
+
+      PreparedStatement create = conn.prepareStatement(
+        "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)");
+      create.executeUpdate();
 
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
