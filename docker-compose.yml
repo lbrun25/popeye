@@ -39,6 +39,8 @@ services:
         build:
             context: worker
             dockerfile: Dockerfile
+        environment: 
+            - 0.0.0.0
         networks:
             - back-tier
         links:
@@ -51,7 +53,7 @@ services:
         env_file:
             - db.env
         volumes:
-            - ./dbdata:/var/lib/postgresql/data # persist data
+            - ./db-data:/var/lib/postgresql/data # persist data
         networks:
             - result-tier
             - back-tier
@@ -73,4 +75,4 @@ services:
             - db
 
 volumes:
-    dbdata:
+    db-data:
